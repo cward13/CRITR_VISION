@@ -73,9 +73,9 @@ int main(int argc, char** argv)
         /* print the width and height of the frame, needed by the client */
         cout << "\n--> Transferring  (" << img0.cols << "x" << img0.rows << ")  images to the:  " << server_ip << ":" << server_port << endl;
 
-        //namedWindow("stream_client", CV_WINDOW_AUTOSIZE);
-                        flip(img0, img0, 1);
-                        cvtColor(img0, img1, CV_BGR2GRAY);
+        namedWindow("stream_client", CV_WINDOW_AUTOSIZE);
+                        //flip(img0, img0, 1);
+                        //cvtColor(img0, img1, CV_BGR2GRAY);
 
         while(key != 'q') {
                 /* get a frame from camera */
@@ -84,8 +84,8 @@ int main(int argc, char** argv)
 
                 pthread_mutex_lock(&mutex);
 
-                        flip(img0, img0, 1);
-                        cvtColor(img0, img1, CV_BGR2GRAY);
+                        //flip(img0, img0, 1);
+                        //cvtColor(img0, img1, CV_BGR2GRAY);
 
                         is_data_ready = 1;
 
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 
                 /*also display the video here on client */
 	
-                //imshow("stream_client", img2);
+                imshow("stream_client", img2);
                 key = waitKey(30);
         }
 
@@ -135,9 +135,9 @@ void* streamClient(void* arg)
                 quit("\n--> connect() failed.", 1);
         }
 
-        int  imgSize = img1.total()*img1.elemSize();
+        int  imgSize = img0.total()*img0.elemSize();
         int  bytes=0;
-        img2 = (img1.reshape(0,1)); // to make it continuous
+        //img2 = (img1.reshape(0,1)); // to make it continuous
 	*/
 
 
@@ -162,7 +162,7 @@ void* streamClient(void* arg)
 
 	int  imgSize = img0.total()*img0.elemSize();
         int  bytes=0;
-        img2 = (img0.reshape(0,1)); // to make it continuous
+        //img2 = (img0.reshape(0,1)); // to make it continuous
  	img2 = img0;
 	vector<unsigned char>buff;
 	vector<int> compression_params;
