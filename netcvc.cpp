@@ -73,21 +73,25 @@ int main(int argc, char** argv)
         /* print the width and height of the frame, needed by the client */
         cout << "\n--> Transferring  (" << img0.cols << "x" << img0.rows << ")  images to the:  " << server_ip << ":" << server_port << endl;
 
-        namedWindow("stream_client", CV_WINDOW_AUTOSIZE);
+        //namedWindow("stream_client", CV_WINDOW_AUTOSIZE);
                         //flip(img0, img0, 1);
                         //cvtColor(img0, img1, CV_BGR2GRAY);
 
         while(key != 'q') {
                 /* get a frame from camera */
-                capture >> img0;
-                if (img0.empty()) break;
+                //capture >> img0;
+                //if (img0.empty()) break;
 
                 pthread_mutex_lock(&mutex);
+
+		
+                capture >> img0;
+                if (img0.empty()) break;
 
                         //flip(img0, img0, 1);
                         //cvtColor(img0, img1, CV_BGR2GRAY);
 
-                        is_data_ready = 1;
+                is_data_ready = 1;
 
                 pthread_mutex_unlock(&mutex);
 
@@ -167,7 +171,7 @@ void* streamClient(void* arg)
 	vector<unsigned char>buff;
 	vector<int> compression_params;
     	compression_params.push_back(CV_IMWRITE_JPEG_QUALITY);
-    	compression_params.push_back(35);
+    	compression_params.push_back(20);
 
 
 	servaddr.sin_addr.s_addr = inet_addr(server_ip);
@@ -178,9 +182,9 @@ void* streamClient(void* arg)
                 if (is_data_ready) {
                         pthread_mutex_lock(&mutex);
                         /* send a message to the server */
-  			cv::resize(img2, img2, cv::Size(640, 480));
-			imencode(".jpg", img2, buff, compression_params);		
-			//if (sendto(fd,img2.data, imgSize, 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
+  			cv::resize(img0, img0, cv::Size(640, 480));
+			imencode(".jpg", img0, buff, compression_params);		
+			//if (sendto(fd,img0.data, imgSize, 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
 			if (sendto(fd,reinterpret_cast<unsigned char*>(&buff[0]), buff.size()*sizeof(unsigned char), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
 			{
 				perror("sendto failed");
@@ -194,7 +198,7 @@ void* streamClient(void* arg)
                 }
                 pthread_testcancel();
                 /* no, take a rest for a while */
-                usleep(1000);   //1000 Micro Sec
+                //usleep(1000);   //1000 Micro Sec
         }
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

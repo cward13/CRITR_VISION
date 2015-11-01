@@ -132,7 +132,7 @@ void* streamServer(void* arg)
 				if(recvlen>0)
 				{
 				img = imdecode(buff,CV_LOAD_IMAGE_COLOR);
-				//imshow("stream_server", img);
+				imshow("stream_server", img);
 				cv::Size s = img.size();
 				Vec3b intensity = img.at<uchar>(200,200);
 				float blue = intensity.val[0];
@@ -143,15 +143,15 @@ void* streamServer(void* arg)
 		        	pthread_mutex_unlock(&mutex);
 				is_data_ready = 1;
 				data_printed = 0;
-			}
-		//}
+			//}
+		}
 	}
 
         /* have we terminated yet? */
         pthread_testcancel();
 	
   	/* no, take a rest for a while */
-        usleep(1000);
+        //usleep(1000);
 	
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
