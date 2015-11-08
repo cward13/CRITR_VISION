@@ -170,7 +170,7 @@ void* streamClient(void* arg)
  	img2 = img0;
 	vector<unsigned char>buff;
 	vector<int> compression_params;
-    	compression_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+    	compression_params.push_back(64);
     	compression_params.push_back(20);
 
 
@@ -183,7 +183,7 @@ void* streamClient(void* arg)
                         pthread_mutex_lock(&mutex);
                         /* send a message to the server */
   			cv::resize(img0, img0, cv::Size(320, 240));
-			imencode(".jpg", img0, buff, compression_params);		
+			imencode(".webp", img0, buff, compression_params);		
 			//if (sendto(fd,img0.data, imgSize, 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
 			if (sendto(fd,reinterpret_cast<unsigned char*>(&buff[0]), buff.size()*sizeof(unsigned char), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
 			{

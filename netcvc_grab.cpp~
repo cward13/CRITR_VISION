@@ -60,7 +60,8 @@ int main(int argc, char** argv)
 
 
 
-        capture >> img0;
+        capture.grab();
+	capture >> img0;
         img1 = Mat::zeros(img0.rows, img0.cols ,CV_8UC1);
 
         // run the streaming client as a separate thread 
@@ -85,7 +86,8 @@ int main(int argc, char** argv)
                 pthread_mutex_lock(&mutex);
 
 		
-                capture >> img0;
+                capture.grab();
+		capture >> img0;
                 if (img0.empty()) break;
 
                         //flip(img0, img0, 1);
@@ -183,15 +185,15 @@ void* streamClient(void* arg)
                         pthread_mutex_lock(&mutex);
                         /* send a message to the server */
   			cv::resize(img0, img0, cv::Size(320, 240));
-			imencode(".jpg", img0, buff, compression_params);		
+			//imencode(".jpg", img0, buff, compression_params);		
 			//if (sendto(fd,img0.data, imgSize, 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
-			if (sendto(fd,reinterpret_cast<unsigned char*>(&buff[0]), buff.size()*sizeof(unsigned char), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
+			if (sendto(fd,img0.data, imgSize, 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
 			{
 				perror("sendto failed");
 				return 0;
 			} 
 
-			std::cerr << "Elements: " << buff.size     () << std::endl;
+			std::cerr << "Elements: " << imgSize << std::endl;
  			std::cerr << "Capacity: " << buff.capacity () << std::endl;			
 			is_data_ready = 0;
                         pthread_mutex_unlock(&mutex);

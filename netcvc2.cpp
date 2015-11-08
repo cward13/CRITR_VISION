@@ -18,7 +18,7 @@ int	data_printed = 1;
 int     listenSock, connectSock,fd;
 int 	listenPort;
 char*   server_ip;
-int BUFSIZE=32768;
+int BUFSIZE=8192;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -142,6 +142,7 @@ void* streamServer(void* arg)
 		    pthread_mutex_unlock(&mutex);
 			is_data_ready = 1;
 			data_printed = 0;
+			//usleep(16000);
 		}
 	}
     pthread_testcancel();
