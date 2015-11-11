@@ -55,8 +55,8 @@ int main(int argc, char** argv)
 
 
 
-	capture.set(CV_CAP_PROP_FRAME_WIDTH,640);
-	capture.set(CV_CAP_PROP_FRAME_HEIGHT,480);
+	capture.set(CV_CAP_PROP_FRAME_WIDTH,320);
+	capture.set(CV_CAP_PROP_FRAME_HEIGHT,240);
 
 
 
@@ -182,7 +182,7 @@ void* streamClient(void* arg)
                 if (is_data_ready) {
                         pthread_mutex_lock(&mutex);
                         /* send a message to the server */
-  			cv::resize(img0, img0, cv::Size(640, 480));
+  			cv::resize(img0, img0, cv::Size(320, 240));
 			imencode(".jpg", img0, buff, compression_params);		
 			//if (sendto(fd,img0.data, imgSize, 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
 			if (sendto(fd,reinterpret_cast<unsigned char*>(&buff[0]), buff.size()*sizeof(unsigned char), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
@@ -198,7 +198,7 @@ void* streamClient(void* arg)
                 }
                 pthread_testcancel();
                 /* no, take a rest for a while */
-                //usleep(1000);   //1000 Micro Sec
+                usleep(60000);   //1000 Micro Sec
         }
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
