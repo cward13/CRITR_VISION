@@ -21,8 +21,8 @@ using namespace std;
 using namespace cv;
 
 
-int HEIGHT = 480; 
-int WIDTH = 640;
+int HEIGHT = 240; 
+int WIDTH = 320;
 
 
 VideoCapture    captureL,captureR;
@@ -49,9 +49,9 @@ int main(int argc, char** argv)
                 captureL.open(argv[3]);
 		captureR.open(argv[4]);
         } else {
-                captureL.open(0);
+                captureL.open(1);
 		//captureR=captureL;
-		captureR.open(1);
+		captureR.open(0);
         }
 
         if (!captureL.isOpened()) {
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 
 
 
-        namedWindow("stream_client", CV_WINDOW_AUTOSIZE);
+        //namedWindow("stream_client", CV_WINDOW_AUTOSIZE);
                         //flip(img0, img0, 1);
                         //cvtColor(img0, img1, CV_BGR2GRAY);
 
@@ -98,22 +98,19 @@ int main(int argc, char** argv)
 
         while(key != 'q') {
 
-
-                pthread_mutex_lock(&mutex);
-
-                captureL >> img0;
-                if (img0.empty()) break;
-
-		captureR >> img1;
-                if (img1.empty()) break;
-		
-
-    		img0.copyTo(left);
-    		img1.copyTo(right);		
-
-                pthread_mutex_unlock(&mutex);
+		if(is_data_ready == 0)
+		{
+                	pthread_mutex_lock(&mutex);
+                	captureL >> img0;
+               		if (img0.empty()) break;	
+			captureR >> img1;
+                	if (img1.empty()) break;
+    			img0.copyTo(left);
+    			img1.copyTo(right);		
+                	pthread_mutex_unlock(&mutex);
+		}
                 is_data_ready = 1;
-
+		usleep(32000);
                 /*also display the video here on client */
                 key = waitKey(30);
         }
@@ -170,7 +167,7 @@ void* streamClient(void* arg)
                         pthread_mutex_lock(&mutex);
                         /* send a message to the server */
   			//cv::resize(img2, img2, cv::Size(640, 480));
-			imshow("stream_client", img2);
+			//imshow("stream_client", img2);
 			imencode(".jpg", img2, buff, compression_params);		
 			//if (sendto(fd,img0.data, imgSize, 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
 			if (sendto(fd,reinterpret_cast<unsigned char*>(&buff[0]), buff.size()*sizeof(unsigned char), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
