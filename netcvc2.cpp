@@ -8,17 +8,20 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/opencv.hpp>
+
 
 using namespace std;
 using namespace cv;
                         
-Mat     img;
+Mat     img,upscale_img;
 int     is_data_ready = 0;
 int	data_printed = 1; 
 int     listenSock, connectSock,fd;
 int 	listenPort;
 char*   server_ip;
-int BUFSIZE=8192;
+int BUFSIZE=32768;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -55,8 +58,10 @@ int main(int argc, char** argv)
 	{
         pthread_mutex_lock(&mutex);
         if (is_data_ready) 
-		{
-            imshow("stream_server", img);
+	{
+	    cv::resize(img, upscale_img, Size(960, 480), 0, 0, INTER_CUBIC); 
+            imshow("stream_server", upscale_img);
+	    //imshow("stream_server",img);
             is_data_ready = 0;
 			data_printed=1;
         }
